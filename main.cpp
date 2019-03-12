@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
-#define COLS 2
 
 //its a nice bible verse, if the whole bible was this good i might start reading it
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -16,9 +15,11 @@
 
 using namespace std;
 
+const int COLS = 2;
+
 double calcArea(int xycoords[][COLS], int num_side, double area);
 double calcPerimeter(int xycoords[][COLS], int num_side, double perimeter);
-void displayGraph(int xycoords[][COLS], int num_side);
+void displayGraph(int copyarray[][COLS], int num_side);
 
 int main(){
     int num_side;
@@ -47,29 +48,16 @@ int main(){
         copyarray[i][1] = xycoords[i][1];
     }
 
-    for(int x = 0; x <= num_side; x++){
-        bool ordered = true;
-
-        if(xycoords[x][0] == 0 || xycoords[x][1] == 0) ordered = false;
-
-        while(!ordered){
-            ordered = true;
-
-            for(int i = 0; i <= num_side; i++) if(xycoords[i][0] == 0 || xycoords[i][1] == 0) ordered = false;
-
-            for(int i = 0; i <= num_side; i++){xycoords[i][0] += 1; xycoords[i][1] += 1;}
-        }
-    }
-
-    xycoords[num_side][0] = xycoords[0][0]; xycoords[num_side][1] = xycoords[0][1];
-
     cout << "Calculating perimeter and area of polygon..\n"; system("sleep 1.5");
     cout << "Gathering results...\n"; system("sleep 2; clear");
 
+    displayGraph(copyarray, num_side);
+
+    xycoords[num_side][0] = xycoords[0][0];
+    xycoords[num_side][1] = xycoords[0][1];
+
     double area = calcArea(xycoords, num_side, 0);
     double perimeter = calcPerimeter(xycoords, num_side, 0);
-
-    displayGraph(copyarray, num_side);
 
     cout << "Your coordinates are: ";
     for(int x = 0; x < num_side; x++) cout << " (" << copyarray[x][0] << "," << copyarray[x][1] << ")";
@@ -80,9 +68,11 @@ int main(){
 }
 
 double calcArea(int xycoords[][COLS], int num_side, double area){
-    for(int i = 0; i < num_side; i++) area += (((xycoords[i][0] * xycoords[i + 1][1]) - (xycoords[i][1] * xycoords[i + 1][0])) / 2);
+    for(int i = 0; i < num_side; i++){
+		area += (((xycoords[i][0] * xycoords[i + 1][1]) - (xycoords[i][1] * xycoords[i + 1][0])));
+	}
 
-    return abs(area);
+    return abs(area / 2);
 }
 
 double calcPerimeter(int xycoords[][COLS], int num_side, double perimeter){
@@ -92,7 +82,14 @@ double calcPerimeter(int xycoords[][COLS], int num_side, double perimeter){
 }
 
 //this is gonna be the coolest thing you've ever seen
-void displayGraph(int xycoords[][COLS], int num_side){
+void displayGraph(int copyarray[][COLS], int num_side){
+	int xycoords[num_side][COLS];
+
+	for(int i = 0; i < num_side; i++){
+		xycoords[i][0] = copyarray[i][0];
+		xycoords[i][1] = copyarray[i][1];
+	}
+
     int x_max, y_max;
 
     char graph[11][11] = {
@@ -111,48 +108,51 @@ void displayGraph(int xycoords[][COLS], int num_side){
 
     //find max values of x and y sides
 
+    //DO SOMETHING TO MAKE ALL VALUES GREATER THAN 0
+
     for(int i = 0; i < num_side; i++){
         for(int j = 0; j < num_side; j++){
-            if(xycoords[i][0] > xycoords[j][0]){
-                x_max = xycoords[i][0];
+            if(abs(xycoords[i][0]) > abs(xycoords[j][0])){
+                x_max = abs(xycoords[i][0]);
             }
-            else if(xycoords[i][0] < xycoords[j][0]){
-                x_max = xycoords[j][0];
+            else if(abs(xycoords[i][0]) < abs(xycoords[j][0])){
+                x_max = abs(xycoords[j][0]);
             }
-            if(xycoords[i][1] > xycoords[j][1]){
-                y_max = xycoords[i][1];
+            if(abs(xycoords[i][1]) > abs(xycoords[j][1])){
+                y_max = abs(xycoords[i][1]);
             }
-            else if(xycoords[j][1] > xycoords[i][1]){
-                y_max = xycoords[j][1];
+            else if(abs(xycoords[j][1]) > abs(xycoords[i][1])){
+                y_max = abs(xycoords[j][1]);
             }
         }
     }
 
     // the min is just abs(max) * -1
-    int x_min = abs(x_max) * -1;
-    x_max = abs(x_max);
-    int y_min = abs(y_min) * -1;
-    y_max = abs(y_max);
+    //int x_min = abs(x_max) * -1;
+    //int y_min = abs(y_max) * -1;
 
-    //the formula im using to "normalize the data"(i feel fancy now) is:
-    //normalized_point = (original_point - min_point) / (max_point - min_point)
-
-
-    //points being fit onto the graph
+    //do indiv_point/max_point * 10
     for(int i = 0; i < num_side; i++){
-        //normalizing and then slashing off the decimal(using floor) since its a int array
-        xycoords[i][0] = floor(((10)/(x_max - x_min) * (xycoords[i][0] - x_max)) + 5);
-        //xycoords[i][0] = (xycoords[i][0] % 5) + 5;
-        cout << endl << xycoords[i][0] << ":" << xycoords[i][1];
+        xycoords[i][0] = ((xycoords[i][0] / x_max) * 10);
+        xycoords[i][1] = ((xycoords[i][1] / y_max) * 10);
     }
+
+    for(int i = 0; i < num_side; i++){
+// 		xycoords[i][0] %= 10;
+// 		xycoords[i][1] %= 10;
+		cout << endl << xycoords[i][0] << ":" << xycoords[i][1];
+	}
 
     //points being graphed
     for(int i = 0; i < 11; i++){
         cout << "\t";
         for(int j = 0; j < 11; j++){
-            if((xycoords[j][0] == j) && (xycoords[j][1] == i)){
-                graph[i + 1][j + 1] = '.';
+            for(int x = 0; x < num_side; x++){
+                if(xycoords[x][0] == j && xycoords[x][1] == i){
+                    graph[i][j] = '.';
+                }
             }
+            //cout << i << ":::" << j << "JJJ";
             cout << graph[i][j] << " ";
         }
         cout << endl;
