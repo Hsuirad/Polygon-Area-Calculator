@@ -2,14 +2,10 @@
 #include <cmath>
 #include <cstdlib>
 
-//its a nice bible verse, if the whole bible was this good i might start reading it
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                 *
- *  “Even the handle sank in after the blade,      *
- *  and his bowels discharged. Ehud did not pull   *
- *  the sword out, and the fat closed in over it.” *
- *                                                 *
- *                 - Judges 3:22                   *
+ *          MUST BE NONINTERSECTING                *
  *                                                 *
  * * * * * * * * * * * * * * * * * * * * * * * * * */
 
